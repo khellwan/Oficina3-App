@@ -15,6 +15,9 @@ namespace App1
     public class MainActivity : Activity
     {
 
+        private Robot robot;
+
+
         // Get the default adapter
         private BluetoothAdapter mBluetoothAdapter = null;
         private BluetoothSocket btSocket = null;
@@ -40,98 +43,31 @@ namespace App1
         {
             base.OnCreate(bundle);
 
+            robot = new Robot();
+
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
             conectar = FindViewById<ToggleButton>(Resource.Id.toggleButton1);
             Resultado = FindViewById<TextView>(Resource.Id.textView1);
 
             conectar.CheckedChange += tgConnect_HandleCheckedChange;
-
-
-            CheckBt();
         }
-        private void CheckBt()
-        {
-            //Atribuímos o sensor Bluetooth com i que vamos trabalhar
-            mBluetoothAdapter = BluetoothAdapter.DefaultAdapter;
 
-            //Verificamos que está habilitado
-            if (!mBluetoothAdapter.Enable())
-            {
-                Toast.MakeText(this, "Bluetooth desativado",
-                    ToastLength.Short).Show();
-            }
-            //verificamos que não é nulo o sensor
-            if (mBluetoothAdapter == null)
-            {
-                Toast.MakeText(this,
-                    "Bluetooth não existe ou está ocupado", ToastLength.Short)
-                    .Show();
-            }
-        }
         //Evento de troca de estado do toggle button
         void tgConnect_HandleCheckedChange(object sender, CompoundButton.CheckedChangeEventArgs e)
         {
             if (e.IsChecked)
             {
                 //se é ativado o toggle button se incia o método de conexão
-                Connect();
+                robot.StartConnection(delegate() {
+                    beginListenForData();
+                });
             }
             else
             {
                 //em caso de desativar o toggle button se desconecta do Raspberry
-                if (btSocket.IsConnected)
-                {
-                    try
-                    {
-                        btSocket.Close();
-                    }
-                    catch (System.Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                }
+                robot.CloseConnection();
             }
-        }
-
-        //Evento de conexão ao Bluetooth
-        public void Connect()
-        {
-            //Iniciamos a conexão com o Raspberry
-            BluetoothDevice device = mBluetoothAdapter.GetRemoteDevice(address);
-            System.Console.WriteLine("Conectando..." + device);
-
-            //Indicamos o adaptador que não seja visível
-            mBluetoothAdapter.CancelDiscovery();
-            try
-            {
-                //Inicamos o socket de comunicação com o Raspberry
-                btSocket = device.CreateRfcommSocketToServiceRecord(MY_UUID);
-                //Conectamos o socket
-                btSocket.Connect();
-                System.Console.WriteLine("Conectado com Sucesso");
-            }
-            catch (System.Exception e)
-            {
-                //em caso de gerarmos erro fechamos o socket
-                Console.WriteLine(e.Message);
-                try
-                {
-                    btSocket.Close();
-                }
-                catch (System.Exception)
-                {
-                    System.Console.WriteLine("Não foi possível conectar");
-                }
-                System.Console.WriteLine("Socket Criado");
-            }
-            //Uma vez conectados ao bluetooth mandamos chamar o metodo que gerará o fio
-            //que reciberá os dados do Raspberry
-            beginListenForData();
-            
-            //Envio da string
-            dataToSend = new Java.Lang.String("Ola mundo");
-            writeData(dataToSend);
         }
 
         public void beginListenForData()
@@ -139,7 +75,7 @@ namespace App1
             //Extraímos a stream de entrada
             try
             {
-                inStream = btSocket.InputStream;
+                inStream = robot.BtSocket.InputStream;
             }
             catch (System.IO.IOException ex)
             {
@@ -181,41 +117,6 @@ namespace App1
                 }
             });
         }
-        //Método de envio de dados Bluetooth
-        private void writeData(Java.Lang.String data)
-        {
-            //Extrair a stream de saida
-            try
-            {
-                outStream = btSocket.OutputStream;
-            }
-            catch (System.Exception e)
-            {
-                System.Console.WriteLine("Erro ao enviar" + e.Message);
-            }
-
-            //criar a string que enviaremos
-            Java.Lang.String message = data;
-
-            //converter em bytes
-            byte[] msgBuffer = message.GetBytes();
-
-            try
-            {
-                //Escrever no buffer o que acabamos de gerar
-                outStream.Write(msgBuffer, 0, msgBuffer.Length);
-            }
-            catch (System.Exception e)
-            {
-                System.Console.WriteLine("Erro ao enviar" + e.Message);
-            }
-        }
-
-
-
-
-
-
     }
 
 

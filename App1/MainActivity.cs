@@ -137,7 +137,7 @@ namespace App1
             {
                 try
                 {
-                    //MainController.GetInstance().Initialize();
+                    MainController.GetInstance().Initialize();
 
                     overlayScreen.Visibility = Android.Views.ViewStates.Gone;
                     mainScreen.RemoveView(overlayScreen);

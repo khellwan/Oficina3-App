@@ -23,6 +23,7 @@ namespace App1.src.controller
     sealed class MainController
     {
         private static MainController instance = null;
+
         private static readonly object padlock = new object();
 
         private BluetoothAdapter mBluetoothAdapter;
@@ -31,7 +32,7 @@ namespace App1.src.controller
 
         private bool initialized;
 
-        private Mutex connectionMutex;
+        private readonly object connectionLock = new object();
 
         private Mutex bodyCommandMutex;
 
@@ -44,7 +45,6 @@ namespace App1.src.controller
         MainController()
         {
             initialized = false;
-            connectionMutex = new Mutex();
             bodyCommandMutex = new Mutex();
             headCommandMutex = new Mutex();
             bodyCommandStack = 0;
@@ -71,24 +71,36 @@ namespace App1.src.controller
 
         public void Initialize()
         {
-            // Indicar que estamos tentando inicializar
-            initialized = false;
-
-            // Ligar o adaptador Bluetooth do celular para nossa aplicação
-            TurnOnBluetooth();
-
-            // Criar um socket de conexão Bluetooth com o Robô
-            BluetoothSocket btSocket = CreateConnection(Robot.DEFAULT_UUID, Robot.DEFAULT_ADDRESS);
-            if (btSocket == null)
+            // Permitir apenas uma execução por vez
+            if (Monitor.TryEnter(connectionLock))
             {
-                throw new System.ApplicationException("Robô não encontrado.");
+                try
+                {
+                    // Indicar que estamos tentando inicializar
+                    initialized = false;
+
+                    // Ligar o adaptador Bluetooth do celular para nossa aplicação
+                    TurnOnBluetooth();
+
+                    // Criar um socket de conexão Bluetooth com o Robô
+                    BluetoothSocket btSocket = CreateConnection(Robot.DEFAULT_UUID, Robot.DEFAULT_ADDRESS);
+                    if (btSocket == null)
+                    {
+                        throw new System.ApplicationException("Robô não encontrado.");
+                    }
+
+                    // Criar uma representação do Robô
+                    robot = new Robot(btSocket);
+
+                    // Indicar que o processo de inicialização foi concluído com sucesso
+                    initialized = true;
+
+                }
+                finally
+                {
+                    Monitor.Exit(connectionLock);
+                }
             }
-
-            // Criar uma representação do Robô
-            robot = new Robot(btSocket);
-
-            // Indicar que o processo de inicialização foi concluído com sucesso
-            initialized = true;
         }
 
         public void Stop()
@@ -195,12 +207,6 @@ namespace App1.src.controller
 
         private BluetoothSocket CreateConnection(String uuid, String address)
         {
-            // Trava de acesso a essa função
-            if (!connectionMutex.WaitOne(100))
-            {
-                return null;
-            }
-
             BluetoothDevice pairedBTDevice = null;
             BluetoothSocket btSocket = null;
 
@@ -215,7 +221,6 @@ namespace App1.src.controller
             }
             catch (Exception e)
             {
-                connectionMutex.ReleaseMutex();
                 throw new System.ApplicationException("Erro ao encontrar o Robô.", e);
             }
             
@@ -232,7 +237,6 @@ namespace App1.src.controller
                 // Checar o resultado
                 if (btSocket.IsConnected)
                 {
-                    connectionMutex.ReleaseMutex();
                     return btSocket;
                 }
                 else
@@ -251,11 +255,9 @@ namespace App1.src.controller
                 {
                     // Ignore
                 }
-                connectionMutex.ReleaseMutex();
                 throw e;
             }
-
-            connectionMutex.ReleaseMutex();
+            
             return null;
         }
         

@@ -1,4 +1,6 @@
-﻿using Android.App;
+﻿using System.Threading;
+
+using Android.App;
 using Android.Widget;
 using Android.OS;
 
@@ -23,6 +25,9 @@ namespace App1
         private AbsoluteLayout mainScreen;
         private RelativeLayout overlayScreen;
         private GridLayout contentScreen;
+
+        private static readonly object bodyCmdLock = new object();
+        private static readonly object headCmdLock = new object();
         
         protected override void OnCreate(Bundle bundle)
         {
@@ -48,6 +53,8 @@ namespace App1
             // Adicionar eventos aos botões
             buttonRobotUp.Touch += (o, e) =>
             {
+                if (!Monitor.TryEnter(bodyCmdLock))
+                    return;
                 switch (e.Event.Action)
                 {
                     case Android.Views.MotionEventActions.Down:
@@ -58,9 +65,12 @@ namespace App1
                         MainController.Instance.SetRobotMovement(Robot.BodyCommands.STOP);
                         break;
                 }
+                Monitor.Exit(bodyCmdLock);
             };
             buttonRobotDown.Touch += (o, e) =>
             {
+                if (!Monitor.TryEnter(bodyCmdLock))
+                    return;
                 switch (e.Event.Action)
                 {
                     case Android.Views.MotionEventActions.Down:
@@ -71,9 +81,12 @@ namespace App1
                         MainController.Instance.SetRobotMovement(Robot.BodyCommands.STOP);
                         break;
                 }
+                Monitor.Exit(bodyCmdLock);
             };
             buttonRobotLeft.Touch += (o, e) =>
             {
+                if (!Monitor.TryEnter(bodyCmdLock))
+                    return;
                 switch (e.Event.Action)
                 {
                     case Android.Views.MotionEventActions.Down:
@@ -84,9 +97,12 @@ namespace App1
                         MainController.Instance.SetRobotMovement(Robot.BodyCommands.STOP);
                         break;
                 }
+                Monitor.Exit(bodyCmdLock);
             };
             buttonRobotRight.Touch += (o, e) =>
             {
+                if (!Monitor.TryEnter(bodyCmdLock))
+                    return;
                 switch (e.Event.Action)
                 {
                     case Android.Views.MotionEventActions.Down:
@@ -97,6 +113,7 @@ namespace App1
                         MainController.Instance.SetRobotMovement(Robot.BodyCommands.STOP);
                         break;
                 }
+                Monitor.Exit(bodyCmdLock);
             };
 
             // Mapear os botões de controle da Cabeça do Robô
@@ -105,6 +122,8 @@ namespace App1
             // Adicionar eventos aos botões
             buttonHeadLeft.Touch += (o, e) =>
             {
+                if (!Monitor.TryEnter(headCmdLock))
+                    return;
                 switch (e.Event.Action)
                 {
                     case Android.Views.MotionEventActions.Down:
@@ -115,9 +134,12 @@ namespace App1
                         MainController.Instance.SetRobotHeadRotation(Robot.HeadCommands.STOP);
                         break;
                 }
+                Monitor.Exit(headCmdLock);
             };
             buttonHeadRight.Touch += (o, e) =>
             {
+                if (!Monitor.TryEnter(headCmdLock))
+                    return;
                 switch (e.Event.Action)
                 {
                     case Android.Views.MotionEventActions.Down:
@@ -128,6 +150,7 @@ namespace App1
                         MainController.Instance.SetRobotHeadRotation(Robot.HeadCommands.STOP);
                         break;
                 }
+                Monitor.Exit(headCmdLock);
             };
 
             // Mapear o botão de conectar-se ao Robô por meio do Bluetooth

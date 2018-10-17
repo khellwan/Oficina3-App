@@ -51,11 +51,11 @@ namespace App1
                 switch (e.Event.Action)
                 {
                     case Android.Views.MotionEventActions.Down:
-                        MainController.GetInstance().SetRobotMovement(0.75f, 0.0f);
+                        MainController.Instance.SetRobotMovement(Robot.BodyCommands.FORWARD);
                         break;
                     case Android.Views.MotionEventActions.Up:
                     case Android.Views.MotionEventActions.Cancel:
-                        MainController.GetInstance().SetRobotMovement(0.0f, 0.0f);
+                        MainController.Instance.SetRobotMovement(Robot.BodyCommands.STOP);
                         break;
                 }
             };
@@ -64,11 +64,11 @@ namespace App1
                 switch (e.Event.Action)
                 {
                     case Android.Views.MotionEventActions.Down:
-                        MainController.GetInstance().SetRobotMovement(-0.75f, 0.0f);
+                        MainController.Instance.SetRobotMovement(Robot.BodyCommands.BACKWARD);
                         break;
                     case Android.Views.MotionEventActions.Up:
                     case Android.Views.MotionEventActions.Cancel:
-                        MainController.GetInstance().SetRobotMovement(0.0f, 0.0f);
+                        MainController.Instance.SetRobotMovement(Robot.BodyCommands.STOP);
                         break;
                 }
             };
@@ -77,11 +77,11 @@ namespace App1
                 switch (e.Event.Action)
                 {
                     case Android.Views.MotionEventActions.Down:
-                        MainController.GetInstance().SetRobotMovement(0.0f, 0.75f);
+                        MainController.Instance.SetRobotMovement(Robot.BodyCommands.TURN_LEFT);
                         break;
                     case Android.Views.MotionEventActions.Up:
                     case Android.Views.MotionEventActions.Cancel:
-                        MainController.GetInstance().SetRobotMovement(0.0f, 0.0f);
+                        MainController.Instance.SetRobotMovement(Robot.BodyCommands.STOP);
                         break;
                 }
             };
@@ -90,11 +90,11 @@ namespace App1
                 switch (e.Event.Action)
                 {
                     case Android.Views.MotionEventActions.Down:
-                        MainController.GetInstance().SetRobotMovement(0.0f, -0.75f);
+                        MainController.Instance.SetRobotMovement(Robot.BodyCommands.TURN_RIGHT);
                         break;
                     case Android.Views.MotionEventActions.Up:
                     case Android.Views.MotionEventActions.Cancel:
-                        MainController.GetInstance().SetRobotMovement(0.0f, 0.0f);
+                        MainController.Instance.SetRobotMovement(Robot.BodyCommands.STOP);
                         break;
                 }
             };
@@ -108,11 +108,11 @@ namespace App1
                 switch (e.Event.Action)
                 {
                     case Android.Views.MotionEventActions.Down:
-                        MainController.GetInstance().SetRobotHeadRotation(-0.75f);
+                        MainController.Instance.SetRobotHeadRotation(Robot.HeadCommands.LEFT);
                         break;
                     case Android.Views.MotionEventActions.Up:
                     case Android.Views.MotionEventActions.Cancel:
-                        MainController.GetInstance().SetRobotHeadRotation(0.0f);
+                        MainController.Instance.SetRobotHeadRotation(Robot.HeadCommands.STOP);
                         break;
                 }
             };
@@ -121,11 +121,11 @@ namespace App1
                 switch (e.Event.Action)
                 {
                     case Android.Views.MotionEventActions.Down:
-                        MainController.GetInstance().SetRobotHeadRotation(0.75f);
+                        MainController.Instance.SetRobotHeadRotation(Robot.HeadCommands.RIGHT);
                         break;
                     case Android.Views.MotionEventActions.Up:
                     case Android.Views.MotionEventActions.Cancel:
-                        MainController.GetInstance().SetRobotHeadRotation(0.0f);
+                        MainController.Instance.SetRobotHeadRotation(Robot.HeadCommands.STOP);
                         break;
                 }
             };
@@ -137,7 +137,7 @@ namespace App1
             {
                 try
                 {
-                    MainController.GetInstance().Initialize();
+                    MainController.Instance.Initialize();
 
                     overlayScreen.Visibility = Android.Views.ViewStates.Gone;
                     mainScreen.RemoveView(overlayScreen);
@@ -153,7 +153,7 @@ namespace App1
         protected override void OnDestroy()
         {
             base.OnDestroy();
-            MainController.GetInstance().Stop();
+            MainController.Instance.Stop();
         }
     }
 

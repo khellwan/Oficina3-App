@@ -41,14 +41,14 @@
 			android:layout_column="2"
 			android:id="@+id/btnRight" />
 		<Button
-			android:text="Right"
+			android:text="Left"
 			android:layout_columnWeight="1"
 			android:layout_rowWeight="1"
 			android:layout_row="1"
 			android:layout_column="4"
 			android:id="@+id/btnHeadLeft" />
 		<Button
-			android:text="Left"
+			android:text="Right"
 			android:layout_columnWeight="1"
 			android:layout_rowWeight="1"
 			android:layout_row="1"
@@ -66,7 +66,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:orientation="vertical"
-		android:background="#dd333333"
+		android:background="#f9333333"
 		android:id="@+id/overlayScreen" >
 		<Button
 			android:text="Conectar"
@@ -82,6 +82,7 @@
 			android:layout_height="wrap_content"
 			android:layout_centerHorizontal="true"
 			android:textAlignment="center"
+			android:textColor="#fff"
 			android:textSize="20sp"
 			android:id="@+id/textView1" />
 	</RelativeLayout>

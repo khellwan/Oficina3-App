@@ -110,6 +110,119 @@ namespace App1.src.controller
             initialized = false;
         }
 
+        private void TurnOnBluetooth()
+        {
+            // Atribuímos o sensor Bluetooth com que vamos trabalhar
+            mBluetoothAdapter = BluetoothAdapter.DefaultAdapter;
+
+            // Verificamos que está habilitado
+            if (!mBluetoothAdapter.Enable())
+            {
+                throw new System.ApplicationException("Bluetooth desativado!");
+            }
+            // Verificamos que não é nulo o sensor
+            if (mBluetoothAdapter == null)
+            {
+                throw new System.ApplicationException("Bluetooth indisponível ou está ocupado!");
+            }
+        }
+
+        private BluetoothSocket CreateConnection(String uuid, String address)
+        {
+            BluetoothDevice pairedBTDevice = null;
+            BluetoothSocket btSocket = null;
+
+            // Preparando ...
+            try
+            {
+                // Iniciamos a conexão com o dispositivo solicitado
+                pairedBTDevice = mBluetoothAdapter.GetRemoteDevice(address);
+
+                // Indicamos ao adaptador que não seja visível
+                mBluetoothAdapter.CancelDiscovery();
+            }
+            catch (Exception e)
+            {
+                throw new System.ApplicationException("Erro ao encontrar o Robô.", e);
+            }
+            
+            // Conectando ...
+            try
+            {
+                // Inicamos o socket de comunicação com o Raspberry
+                btSocket = pairedBTDevice.CreateRfcommSocketToServiceRecord(UUID.FromString(uuid));
+
+                // Tentar conectar ao socket (processo assíncrono)
+                btSocket.ConnectAsync();
+
+                // 5 tentativas
+                for (int try_conn = 0; try_conn < 5; try_conn++)
+                {
+                    // Esperar por 1 segundo
+                    Thread.Sleep(1000);
+
+                    // Checar o resultado da tentativa
+                    if (btSocket.IsConnected)
+                    {
+                        // Sucesso! Retorna o socket e finaliza o processo
+                        return btSocket;
+                    }
+                }
+
+                // Esgotando as 5 tentativas, fecha-se o socket e retorna um erro
+                btSocket.Close();
+                throw new System.ApplicationException("Falha ao tentar conectar ao Robô.");
+            }
+            catch (Exception e)
+            {
+                // Em caso de erro, fechamos o socket
+                try
+                {
+                    btSocket.Close();
+                }
+                catch (Exception ex)
+                {
+                    // Ignore
+                }
+                throw new System.ApplicationException("Erro ao tentar conectar ao Robô.", e);
+            }
+        }
+        
+        private void CloseConnection(BluetoothSocket btSocket)
+        {
+            // Checar se é um socket válido e conectado
+            if (btSocket != null && btSocket.IsConnected)
+            {
+                try
+                {
+                    // Tentar fechar a conexão
+                    btSocket.Close();
+
+                    mBluetoothAdapter = null;
+                }
+                catch (System.Exception e)
+                {
+                    throw new System.ApplicationException("Erro ao fechar o socket Bluetooth.", e);
+                }
+            }
+        }
+
+        private void WriteData(BluetoothSocket btSocket, string data)
+        {
+            // Converter a string em bytes
+            byte[] msgBuffer = (new Java.Lang.String(data)).GetBytes();
+
+            // Acessar o buffer de saída do socket e enviar a string convertida em bytes
+            try
+            {
+                btSocket.OutputStream.Write(msgBuffer, 0, msgBuffer.Length);
+            }
+            catch (System.Exception e)
+            {
+                throw new System.ApplicationException("Erro ao enviar os dados por Bluetooth.", e);
+            }
+        }
+
         public void SetRobotMovement(float speed, float rotate)
         {
             if (initialized)
@@ -186,114 +299,6 @@ namespace App1.src.controller
                     break;
             }
             headCommandMutex.ReleaseMutex();
-        }
-
-        private void TurnOnBluetooth()
-        {
-            // Atribuímos o sensor Bluetooth com que vamos trabalhar
-            mBluetoothAdapter = BluetoothAdapter.DefaultAdapter;
-
-            // Verificamos que está habilitado
-            if (!mBluetoothAdapter.Enable())
-            {
-                throw new System.ApplicationException("Bluetooth desativado!");
-            }
-            // Verificamos que não é nulo o sensor
-            if (mBluetoothAdapter == null)
-            {
-                throw new System.ApplicationException("Bluetooth indisponível ou está ocupado!");
-            }
-        }
-
-        private BluetoothSocket CreateConnection(String uuid, String address)
-        {
-            BluetoothDevice pairedBTDevice = null;
-            BluetoothSocket btSocket = null;
-
-            // Preparando ...
-            try
-            {
-                // Iniciamos a conexão com o dispositivo solicitado
-                pairedBTDevice = mBluetoothAdapter.GetRemoteDevice(address);
-
-                // Indicamos ao adaptador que não seja visível
-                mBluetoothAdapter.CancelDiscovery();
-            }
-            catch (Exception e)
-            {
-                throw new System.ApplicationException("Erro ao encontrar o Robô.", e);
-            }
-            
-            // Conectando ...
-            try
-            {
-                // Inicamos o socket de comunicação com o Raspberry
-                btSocket = pairedBTDevice.CreateRfcommSocketToServiceRecord(UUID.FromString(uuid));
-
-                // Tentar conectar ao socket em 1 segundo
-                btSocket.ConnectAsync();
-                Thread.Sleep(1000);
-
-                // Checar o resultado
-                if (btSocket.IsConnected)
-                {
-                    return btSocket;
-                }
-                else
-                {
-                    btSocket.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                // Em caso de erro, fechamos o socket
-                try
-                {
-                    btSocket.Close();
-                }
-                catch (Exception ex)
-                {
-                    // Ignore
-                }
-                throw e;
-            }
-            
-            return null;
-        }
-        
-        private void CloseConnection(BluetoothSocket btSocket)
-        {
-            // Checar se é um socket válido e conectado
-            if (btSocket != null && btSocket.IsConnected)
-            {
-                try
-                {
-                    // Tentar fechar a conexão
-                    btSocket.Close();
-
-                    mBluetoothAdapter = null;
-                }
-                catch (System.Exception e)
-                {
-                    throw new System.ApplicationException("Erro ao fechar o socket Bluetooth.", e);
-                }
-            }
-        }
-
-        private void WriteData(BluetoothSocket btSocket, string data)
-        {
-            // Converter a string em bytes
-            byte[] msgBuffer = (new Java.Lang.String(data)).GetBytes();
-
-            // Acessar o buffer de saída do socket e enviar a string convertida em bytes
-            try
-            {
-                btSocket.OutputStream.Write(msgBuffer, 0, msgBuffer.Length);
-            }
-            catch (System.Exception e)
-            {
-                throw new System.ApplicationException("Erro ao enviar os dados por Bluetooth.", e);
-            }
         }
     }
 }

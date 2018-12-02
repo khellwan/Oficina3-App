@@ -9,18 +9,17 @@ using App1.src.model;
 
 namespace App1
 {
-    [Activity(Label = "Baby-8", MainLauncher = true, Icon = "@drawable/icon", ScreenOrientation = Android.Content.PM.ScreenOrientation.Landscape)]
+    [Activity(Label = "Baby-8", MainLauncher = true, Icon = "@drawable/icon_bb8", ScreenOrientation = Android.Content.PM.ScreenOrientation.Landscape)]
 
     public class MainActivity : Activity
     {
         // Criar uma representação do Robô
-        private Robot robot;
-        private Button buttonRobotUp;
-        private Button buttonRobotDown;
-        private Button buttonRobotLeft;
-        private Button buttonRobotRight;
-        private Button buttonHeadLeft;
-        private Button buttonHeadRight;
+        private ImageButton buttonRobotUp;
+        private ImageButton buttonRobotDown;
+        private ImageButton buttonRobotLeft;
+        private ImageButton buttonRobotRight;
+        private ImageButton buttonHeadLeft;
+        private ImageButton buttonHeadRight;
         private Button buttonConnect;
         private AbsoluteLayout mainScreen;
         private RelativeLayout overlayScreen;
@@ -46,10 +45,11 @@ namespace App1
             overlayScreen.Visibility = Android.Views.ViewStates.Visible;
 
             // Mapear os botões de controle do Corpo do Robô
-            buttonRobotUp = FindViewById<Button>(Resource.Id.btnUp);
-            buttonRobotDown = FindViewById<Button>(Resource.Id.btnDown);
-            buttonRobotLeft = FindViewById<Button>(Resource.Id.btnLeft);
-            buttonRobotRight = FindViewById<Button>(Resource.Id.btnRight);
+            buttonRobotUp = FindViewById<ImageButton>(Resource.Id.btnUp);
+            buttonRobotDown = FindViewById<ImageButton>(Resource.Id.btnDown);
+            buttonRobotLeft = FindViewById<ImageButton>(Resource.Id.btnLeft);
+            buttonRobotRight = FindViewById<ImageButton>(Resource.Id.btnRight);
+
             // Adicionar eventos aos botões
             buttonRobotUp.Touch += (o, e) =>
             {
@@ -117,8 +117,8 @@ namespace App1
             };
 
             // Mapear os botões de controle da Cabeça do Robô
-            buttonHeadLeft = FindViewById<Button>(Resource.Id.btnHeadLeft);
-            buttonHeadRight = FindViewById<Button>(Resource.Id.btnHeadRight);
+            buttonHeadLeft = FindViewById<ImageButton>(Resource.Id.btnHeadLeft);
+            buttonHeadRight = FindViewById<ImageButton>(Resource.Id.btnHeadRight);
             // Adicionar eventos aos botões
             buttonHeadLeft.Touch += (o, e) =>
             {

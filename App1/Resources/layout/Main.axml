@@ -5,55 +5,71 @@
 	android:layout_height="match_parent"
 	android:id="@+id/mainScreen" >
 	<GridLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:orientation="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:columnCount="6"
 		android:rowCount="3"
-		android:id="@+id/contentScreen" >
-		<Button
+		android:background="#ffcea585"
+		android:id="@+id/contentScreen">
+		<ImageButton
+			android:src="@android:drawable/arrow_up_float"
 			android:text="Up"
 			android:layout_columnWeight="1"
 			android:layout_rowWeight="1"
 			android:layout_row="0"
 			android:layout_column="1"
-			android:id="@+id/btnUp" />
-		<Button
+			android:id="@+id/btnUp"
+			android:backgroundTint="#fff0700f" />
+		<ImageButton
+			android:src="@android:drawable/arrow_down_float"
 			android:text="Down"
 			android:layout_columnWeight="1"
 			android:layout_rowWeight="1"
 			android:layout_row="2"
 			android:layout_column="1"
-			android:id="@+id/btnDown" />
-		<Button
+			android:id="@+id/btnDown"
+			android:backgroundTint="#fff0700f" />
+		<ImageButton
+			android:src="@android:drawable/arrow_up_float"
+			android:rotation="270"
 			android:text="Left"
 			android:layout_columnWeight="1"
 			android:layout_rowWeight="1"
 			android:layout_row="1"
 			android:layout_column="0"
-			android:id="@+id/btnLeft" />
-		<Button
+			android:id="@+id/btnLeft"
+			android:backgroundTint="#fff0700f" />
+		<ImageButton
+			android:src="@android:drawable/arrow_up_float"
+			android:rotation="90"
 			android:text="Right"
 			android:layout_columnWeight="1"
 			android:layout_rowWeight="1"
 			android:layout_row="1"
 			android:layout_column="2"
-			android:id="@+id/btnRight" />
-		<Button
+			android:id="@+id/btnRight"
+			android:backgroundTint="#fff0700f" />
+		<ImageButton
+			android:src="@android:drawable/arrow_up_float"
+			android:rotation="270"
 			android:text="Left"
 			android:layout_columnWeight="1"
 			android:layout_rowWeight="1"
 			android:layout_row="1"
 			android:layout_column="4"
-			android:id="@+id/btnHeadLeft" />
-		<Button
+			android:id="@+id/btnHeadLeft"
+			android:backgroundTint="#fff0700f" />
+		<ImageButton
+			android:src="@android:drawable/arrow_up_float"
+			android:rotation="90"
 			android:text="Right"
 			android:layout_columnWeight="1"
 			android:layout_rowWeight="1"
 			android:layout_row="1"
 			android:layout_column="5"
-			android:id="@+id/btnHeadRight" />
+			android:id="@+id/btnHeadRight"
+			android:backgroundTint="#fff0700f" />
 		<Space
 			android:layout_columnWeight="1"
 			android:layout_rowWeight="1"
@@ -62,12 +78,18 @@
 			android:id="@+id/space1" />
 	</GridLayout>
 	<RelativeLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:orientation="vertical"
-		android:background="#f9333333"
-		android:id="@+id/overlayScreen" >
+		android:id="@+id/overlayScreen"
+		android:background="#fff0700f" >
+		<!--
+		<ImageView
+			android:src="@drawable/bb8wallpapers"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:scaleType="fitXY" />
+		-->
 		<Button
 			android:text="Conectar"
 			android:layout_width="wrap_content"
@@ -75,7 +97,9 @@
 			android:layout_centerHorizontal="true"
 			android:layout_alignParentBottom="true"
 			android:textSize="15sp"
-			android:id="@+id/btnConnect" />
+			android:id="@+id/btnConnect"
+			android:backgroundTint="#ffcd500c"
+			android:textColor="#ffffffff" />
 		<TextView
 			android:text="É necessário conectar-se ao robô para utilizar as funcionalidades do aplicativo."
 			android:layout_width="wrap_content"
